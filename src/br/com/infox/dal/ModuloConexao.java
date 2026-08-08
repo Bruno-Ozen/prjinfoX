@@ -4,6 +4,8 @@
  */
 package br.com.infox.dal;
 import java.sql.*;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author bruno
@@ -12,19 +14,33 @@ public class ModuloConexao {
     // Método responsável por estabelecer a conexão com o banco
     public static Connection conector(){
         java.sql.Connection conexao = null;
-        // A linha abaixo chama o driver:
-        String driver = "com.mysql.cj.jdbc.Driver";
-        // Armazenando informações referente ao banco
-        String url = "jdbc:mysql://localhost:3306/dbinfox?characterEncoding=utf-8";
-        String user = "dba";
-        String password = "infox@123456";
-        // Estabelecendo a conexão com o banco
+        
+        // Driver do SQLite
+        String driver = "org.sqlite.JDBC";
+        
+        // URL do banco de dados SQLite (arquivo na pasta database)
+        // O "./" indica que o arquivo está na raiz do projeto
+        String url = "jdbc:sqlite:./database/dbinfox.db";
+        
+        // SQLite não precisa de usuário e senha por padrão
+        // String user = "";
+        // String password = "";
+        
         try {
+            // Carrega o driver
             Class.forName(driver);
-            conexao = DriverManager.getConnection(url, user, password);
+            
+            // Estabelece a conexão
+            conexao = DriverManager.getConnection(url);
+            
+            // Testa a conexão (opcional)
+            if (conexao != null) {
+                System.out.println("Conexão estabelecida com sucesso!");
+            }
+            
             return conexao;
         } catch (Exception e) {
-            System.out.println(e);
+            System.out.println("Erro ao conectar: " + e);
             return null;
         }
     }
