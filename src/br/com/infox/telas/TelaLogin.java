@@ -17,7 +17,6 @@ public class TelaLogin extends javax.swing.JFrame {
     Connection conexao = null;
     PreparedStatement pst = null;
     ResultSet rs = null;
-    static TelaPrincipal principal;
 
     /**
      * Creates new form TelaLogin
@@ -37,9 +36,9 @@ public class TelaLogin extends javax.swing.JFrame {
             // Se existir usuário e senha correspondente
             if (rs.next()) {
                 // A linha abaixo obtém o conteúdo do campo perfil da tabela tbusuarios
-                String perfil = rs.getString(3);
+                String perfil = rs.getString(6);
                 String usuario = rs.getString(2);
-                principal = new TelaPrincipal();
+                TelaPrincipal principal = new TelaPrincipal();
                 //System.out.println(perfil);
                 // A estrutura abaixo faz o tratamento do perfil do usuario
                 if(perfil.equals("admin")){

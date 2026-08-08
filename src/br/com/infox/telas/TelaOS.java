@@ -54,7 +54,6 @@ public class TelaOS extends javax.swing.JInternalFrame {
                 int adicionado = pst.executeUpdate();
                 if (adicionado > 0) {
                     JOptionPane.showMessageDialog(null, "OS emitida com sucesso.");
-                    recuperar_os();
                     btnOScreate.setEnabled(false);
                     btnOSread.setEnabled(false);
                     btnOSprint.setEnabled(true);
@@ -162,9 +161,9 @@ public class TelaOS extends javax.swing.JInternalFrame {
             }
         }
     }
-
+    
     // Método para imprimir uma OS
-    private void imprimir_os() {
+    private void imprimir_os(){
         int confirma = JOptionPane.showConfirmDialog(null, "Você confirma a impressão desse relatório?", "Atenção", JOptionPane.YES_NO_OPTION);
         if (confirma == JOptionPane.YES_OPTION) {
             try {
@@ -176,19 +175,6 @@ public class TelaOS extends javax.swing.JInternalFrame {
                 JOptionPane.showMessageDialog(null, e);
             }
         }
-    }
-
-    private void recuperar_os() {
-        String sql = "select max(os) from tbos";
-        try {
-            pst = conexao.prepareStatement(sql);
-            rs = pst.executeQuery();
-            if(rs.next()){
-                txtOS.setText(rs.getString(1));
-            }
-        } catch (Exception e) {
-        }
-
     }
 
     // Limpar campos e habilitar os botões

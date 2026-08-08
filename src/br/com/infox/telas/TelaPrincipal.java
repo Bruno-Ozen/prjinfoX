@@ -9,7 +9,6 @@ import java.text.DateFormat;
 import java.util.Date;
 import javax.swing.JOptionPane;
 import java.sql.*;
-import javax.swing.JInternalFrame;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.view.JasperViewer;
@@ -24,12 +23,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
      * Creates new form TelaPrincipal
      */
     Connection conexao = null;
-    static TelaOS os;
-    static TelaCliente cliente;
-    static TelaUsuario usuario;
-    // Instancia do próprio objeto da classe:
-    private static TelaPrincipal instancia;
-        
+
     public TelaPrincipal() {
         initComponents();
         conexao = ModuloConexao.conector();
@@ -201,8 +195,9 @@ public class TelaPrincipal extends javax.swing.JFrame {
     private void ItemOSActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ItemOSActionPerformed
         // TODO add your handling code here:
         // Chamando a tela de ordem de serviço
-        os = new TelaOS();
-        adicionaTela(os);
+        TelaOS os = new TelaOS();
+        os.setVisible(true);
+        Desktop.add(os);
     }//GEN-LAST:event_ItemOSActionPerformed
 
     private void formWindowActivated(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowActivated
@@ -223,14 +218,16 @@ public class TelaPrincipal extends javax.swing.JFrame {
     private void MenuUsuariosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MenuUsuariosActionPerformed
         // TODO add your handling code here:
         // As linhas abaixo irão abrir o formulário dentro do painel da TelaPrincipal
-        usuario = new TelaUsuario();
-        adicionaTela(usuario);
+        TelaUsuario usuario = new TelaUsuario();
+        usuario.setVisible(true);
+        Desktop.add(usuario);
     }//GEN-LAST:event_MenuUsuariosActionPerformed
 
     private void ItemClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ItemClienteActionPerformed
         // TODO add your handling code here:
-        cliente = new TelaCliente();
-        adicionaTela(cliente);
+        TelaCliente cliente = new TelaCliente();
+        cliente.setVisible(true);
+        Desktop.add(cliente);
     }//GEN-LAST:event_ItemClienteActionPerformed
 
     private void itemClientesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemClientesActionPerformed
@@ -264,16 +261,10 @@ public class TelaPrincipal extends javax.swing.JFrame {
             }
         }
     }//GEN-LAST:event_ItemServicosActionPerformed
-    
-    public void adicionaTela(JInternalFrame tela){
-        tela.setVisible(true);
-        Desktop.add(tela);
-    }
-    
+
     /**
      * @param args the command line arguments
      */
-    
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -301,8 +292,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                instancia = new TelaPrincipal();
-                instancia.setVisible(true);
+                new TelaPrincipal().setVisible(true);
             }
         });
     }
