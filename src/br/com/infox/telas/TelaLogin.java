@@ -4,6 +4,7 @@
  */
 package br.com.infox.telas;
 
+import br.com.infox.dal.CriarBanco;
 import java.sql.*;
 import br.com.infox.dal.ModuloConexao;
 import javax.swing.JOptionPane;
@@ -36,8 +37,8 @@ public class TelaLogin extends javax.swing.JFrame {
             // Se existir usuário e senha correspondente
             if (rs.next()) {
                 // A linha abaixo obtém o conteúdo do campo perfil da tabela tbusuarios
-                String perfil = rs.getString(6);
-                String usuario = rs.getString(2);
+                String perfil = rs.getString("perfil");
+                String usuario = rs.getString("usuario");
                 TelaPrincipal principal = new TelaPrincipal();
                 //System.out.println(perfil);
                 // A estrutura abaixo faz o tratamento do perfil do usuario
@@ -190,13 +191,14 @@ public class TelaLogin extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(TelaLogin.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
-
+        CriarBanco.main(args);
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new TelaLogin().setVisible(true);
             }
         });
+        
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

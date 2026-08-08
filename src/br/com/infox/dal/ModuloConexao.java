@@ -1,10 +1,8 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package br.com.infox.dal;
-import java.sql.*;
-import javax.swing.JOptionPane;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
 /**
  *
@@ -12,34 +10,32 @@ import javax.swing.JOptionPane;
  */
 public class ModuloConexao {
     // Método responsável por estabelecer a conexão com o banco
-    public static Connection conector(){
-        java.sql.Connection conexao = null;
-        
+    public static Connection conector() {
+        Connection conexao = null;
+
         // Driver do SQLite
         String driver = "org.sqlite.JDBC";
-        
-        // URL do banco de dados SQLite (arquivo na pasta database)
-        // O "./" indica que o arquivo está na raiz do projeto
-        String url = "jdbc:sqlite:./database/dbinfox.db";
-        
-        // SQLite não precisa de usuário e senha por padrão
-        // String user = "";
-        // String password = "";
-        
+
+        // IMPORTANTE:
+        // Caminho RELATIVO ao diretório de execução.
+        // Sem a barra inicial, vai criar/usar "database/dbinfox.db"
+        // dentro da pasta do projeto / dist.
+        String url = "jdbc:sqlite:database/dbinfox.db";
+
         try {
             // Carrega o driver
             Class.forName(driver);
-            
+
             // Estabelece a conexão
             conexao = DriverManager.getConnection(url);
-            
-            // Testa a conexão (opcional)
+
+            // Log para debug
             if (conexao != null) {
-                System.out.println("Conexão estabelecida com sucesso!");
+                System.out.println("Conexão estabelecida com sucesso! URL = " + url);
             }
-            
+
             return conexao;
-        } catch (Exception e) {
+        } catch (ClassNotFoundException | SQLException e) {
             System.out.println("Erro ao conectar: " + e);
             return null;
         }
