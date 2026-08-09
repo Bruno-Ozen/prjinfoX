@@ -1,31 +1,47 @@
 # X System (prjinfoX)
 
+Projeto de **engenharia reversa e readaptação** de um sistema legado de Ordens de Serviço (InfoX), originalmente desenvolvido com **MySQL**, para um ambiente mais portátil usando **SQLite embarcado** e empacotado em um **JAR executável**.
+
+Neste repositório eu:
+
+- Migrei o backend de **MySQL para SQLite**, removendo a necessidade de instalar servidor de banco de dados.
+- Reescrevi a camada de conexão (`ModuloConexao`) para funcionar tanto na IDE quanto na versão compilada (`dist/prjinfoX.jar`), resolvendo problemas de caminho relativo/absoluto.
+- Criei um módulo de **inicialização automática do banco** (`CriarBanco`), que gera o schema completo e popula com dados realistas (clientes, usuários e ordens de serviço).
+- Ajustei o projeto Ant/NetBeans (build com `dist/`, `lib/`, `database/`) para permitir distribuição simples: baixar, ter Java instalado e rodar o `.jar`.
+- Integrei manualmente bibliotecas externas (`sqlite-jdbc`, `rs2xml`, `jasperreports`, `commons-logging`), resolvendo conflitos de classpath e compatibilidade com versões recentes do Java.
+
 Aplicação desktop em Java para **gerenciamento de clientes** e **emissão de Ordens de Serviço (OS)**, baseada na playlist de desenvolvimento do sistema InfoX disponível em:
 
 > Playlist original do projeto (curso em vídeo):  
 > [https://www.youtube.com/watch?v=rB66EC0VXTA&list=PLbEOwbQR9lqxsTusvu8wfkUECrmcV81MU](https://www.youtube.com/watch?v=rB66EC0VXTA&list=PLbEOwbQR9lqxsTusvu8wfkUECrmcV81MU)
-
-Este repositório adapta o projeto original para usar **SQLite** como banco de dados embarcado, facilitando a execução em qualquer máquina sem precisar instalar MySQL.
 
 ---
 
 ## Tecnologias e competências utilizadas
 
 - **Java (Swing)**
-  - Construção de interface gráfica desktop (JFrame, JInternalFrame, JDesktopPane, JTable, etc.);
-  - Organização em camadas (telas em `br.com.infox.telas`, conexão em `br.com.infox.dal`);
+  - Construção de interface gráfica desktop (JFrame, JInternalFrame, JDesktopPane, JTable, etc.).
+  - Organização em camadas (telas em `br.com.infox.telas`, conexão em `br.com.infox.dal`).
   - Tratamento de eventos (ActionListener), controle de perfis de usuário, validação de campos.
+  - Empacotamento em JAR executável com dependências em `dist/lib`.
 
 - **SQL / Banco de dados**
-  - Uso de **SQLite** com JDBC (`sqlite-jdbc`);
-  - Criação de tabelas (`tbclientes`, `tbusuarios`, `tbos`) e relacionamentos (FK `idcli` em `tbos`);
-  - Comandos de CRUD: `INSERT`, `SELECT`, `UPDATE`, `DELETE`;
-  - Scripts de criação e povoamento automático de dados via classe `CriarBanco`.
+  - Uso de **SQLite** com JDBC (`sqlite-jdbc`) em modo embarcado (sem servidor externo).
+  - Criação de tabelas (`tbclientes`, `tbusuarios`, `tbos`) e relacionamentos (FK `idcli` em `tbos`).
+  - Comandos de CRUD: `INSERT`, `SELECT`, `UPDATE`, `DELETE`.
+  - Scripts de criação e povoamento automático de dados via classe `CriarBanco` (incluindo cerca de 15 registros em cada tabela para testes/demonstração).
+  - Adaptação de código originalmente pensado para MySQL (tipos, auto incremento, data/hora) para o dialeto do SQLite.
 
-- **Relatórios com JasperReports**
-  - Uso das bibliotecas `jasperreports` para geração de relatórios;
-  - Geração de relatórios de **Clientes** e **Serviços** a partir do banco de dados;
-  - Exibição dos relatórios com `JasperViewer`.
+- **Integração com bibliotecas externas**
+  - `sqlite-jdbc` para acesso ao SQLite.
+  - `rs2xml.jar` para popular `JTable` diretamente a partir de `ResultSet`.
+  - `jasperreports` para geração de relatórios (Clientes/Serviços) e `commons-logging` como dependência.
+  - Configuração manual de dependências em projeto Ant/NetBeans, incluindo correções de `NoClassDefFoundError` e empacotamento em `dist/lib`.
+
+- **Engenharia de build e distribuição**
+  - Ajustes em `nbproject/` para corrigir erros de build relacionados a `nblibraries.properties` e Ant.
+  - Configuração de diretórios `dist/`, `lib/` e `database/` para que o sistema rode a partir do JAR, mantendo o banco ao lado do executável.
+  - Tratamento de caminhos relativos/absolutos para que o banco SQLite seja criado e utilizado corretamente em ambiente de desenvolvimento e em produção.
 
 ---
 
@@ -43,7 +59,7 @@ Este repositório adapta o projeto original para usar **SQLite** como banco de d
    - Windows, Linux ou macOS (aplicação Java desktop multiplataforma).
 
 3. **Nenhuma instalação de banco de dados é necessária**
-   - O projeto usa **SQLite embarcado**. O arquivo do banco (`database/dbinfox.db`) é criado e populado automaticamente pela classe `CriarBanco`.
+   - O projeto usa **SQLite embarcado**. O arquivo do banco (`database/dbinfox.db` ou `dist/database/dbinfox.db`) é criado e populado automaticamente pela classe `CriarBanco`.
 
 ---
 
@@ -53,14 +69,20 @@ Principais pastas e arquivos:
 
 ```text
 prjinfoX/
-├─ build/                 # Saída de build do NetBeans (contém o .jar executável)
+├─ build/                 # Saída de build do NetBeans (pode conter um .jar executável)
+├─ dist/
+│  ├─ prjinfoX.jar        # JAR executável gerado pelo NetBeans
+│  ├─ lib/                # Dependências (sqlite-jdbc, rs2xml, jasperreports, commons-logging, etc.)
+│  └─ database/
+│     └─ dbinfox.db      # Banco de dados SQLite utilizado em runtime
 ├─ database/
-│  ├─ dbinfox.db         # Banco de dados SQLite (gerado em tempo de execução)
+│  ├─ dbinfox.db         # Banco de dados SQLite (ambiente de desenvolvimento)
 │  └─ script.sql         # Opcional: script SQL de referência
 ├─ lib/
 │  ├─ sqlite-jdbc-*.jar  # Driver JDBC do SQLite
 │  ├─ rs2xml.jar         # Biblioteca para popular JTable a partir de ResultSet
-│  └─ jasperreports-*.jar# Bibliotecas JasperReports e dependências
+│  ├─ jasperreports-*.jar# Bibliotecas JasperReports
+│  └─ commons-*.jar      # Dependências auxiliares (commons-logging, beanutils, collections, etc.)
 ├─ src/
 │  └─ br/com/infox/
 │     ├─ dal/            # Camada de acesso a dados (ModuloConexao, CriarBanco)
@@ -70,7 +92,7 @@ prjinfoX/
 
 ---
 
-## Como executar o projeto (via JAR na pasta build)
+## Como executar o projeto (via JAR na pasta dist)
 
 1. **Clonar o repositório**
 
@@ -85,23 +107,27 @@ prjinfoX/
 
    - No NetBeans: clique com o botão direito em `CriarBanco.java` → **Run File**.
    - Isso irá:
-     - Criar as tabelas `tbclientes`, `tbusuarios`, `tbos` no arquivo `database/dbinfox.db`.
+     - Criar (ou atualizar) as tabelas `tbclientes`, `tbusuarios`, `tbos` no arquivo `database/dbinfox.db`.
      - Inserir registros de teste (clientes, usuários e ordens de serviço).
 
-   Quando rodar a aplicação pelo JAR, o código de inicialização também pode chamar `CriarBanco` automaticamente (dependendo de como o `main` foi configurado).
+   Para rodar via JAR, recomenda-se copiar a pasta `database/` para dentro de `dist/` ao final do build:
 
-3. **Executar o JAR compilado (pasta build)**
+   ```bash
+   cp -r database dist/
+   ```
 
-   Depois de gerar o build pela IDE (ou usar o build já pronto no repositório), haverá um JAR na pasta `build/` (por exemplo, `prjinfoX.jar`).
+3. **Executar o JAR compilado (pasta dist)**
+
+   Depois de gerar o build pela IDE (NetBeans), haverá um JAR na pasta `dist/` (por exemplo, `prjinfoX.jar`).
 
    No terminal, a partir da raiz do projeto:
 
    ```bash
-   cd build
+   cd dist
    java -jar prjinfoX.jar
    ```
 
-   Se o Java estiver corretamente instalado, a tela de **login** será aberta.
+   Se o Java estiver corretamente instalado, a tela de **login** será aberta e o sistema usará o banco em `dist/database/dbinfox.db`.
 
 4. **Login padrão**
 
@@ -148,20 +174,20 @@ prjinfoX/
     - `fone`
     - `login`
     - `senha`
-    - `perfil` (`admin` ou `user`)
+    - `perfil` (`admin` ou `user`).
 
 - **Ordens de Serviço (`tbos`)**
-  - Emissão de OS (tipo: OS ou Orçamento);
-  - Situações: Aberta, Em andamento, Fechada, Aguardando aprovação, etc;
-  - Associação da OS a um cliente via `idcli`;
-  - Edição, cancelamento e impressão da OS.
+  - Emissão de OS (tipo: OS ou Orçamento).
+  - Situações: Aberta, Em andamento, Fechada, Aguardando aprovação, etc.
+  - Associação da OS a um cliente via `idcli`.
+  - Edição, cancelamento e (quando configurados os arquivos `.jasper`) impressão da OS.
 
 - **Relatórios (JasperReports)**
-  - Relatório de clientes: `clientes.jasper`;
-  - Relatório de serviços: `servicos.jasper`;
+  - Relatório de clientes: `clientes.jasper`.
+  - Relatório de serviços: `servicos.jasper`.
   - Uso de `JasperFillManager.fillReport` e `JasperViewer.viewReport`.
 
-  > Observação: os arquivos `.jasper` devem estar no caminho configurado no código (por exemplo, `C:/reports/clientes.jasper`). Adapte o caminho conforme o seu ambiente.
+  > Observação: atualmente os arquivos `.jasper` originais do curso não estão incluídos neste repositório. A funcionalidade de relatório pode ser adaptada criando novos arquivos `.jasper` (via Jaspersoft Studio) na pasta `reports/` e ajustando os caminhos no código.
 
 ---
 
@@ -176,7 +202,13 @@ Se você quiser **resetar** completamente os dados para o estado inicial:
    prjinfoX/database/dbinfox.db
    ```
 
-3. Rode novamente a classe `CriarBanco` (via IDE) ou novamente o JAR se ele já estiver configurado para chamar `CriarBanco` na inicialização.
+   ou, se estiver usando o banco dentro de `dist/`:
+
+   ```text
+   prjinfoX/dist/database/dbinfox.db
+   ```
+
+3. Rode novamente a classe `CriarBanco` (via IDE) ou execute o fluxo de inicialização configurado no JAR.
 
 Um novo arquivo `dbinfox.db` será criado com as tabelas e registros de exemplo.
 
@@ -189,9 +221,11 @@ Este projeto é baseado na série de aulas do canal **Curso em Vídeo**, adaptad
 - Playlist original:  
   [https://www.youtube.com/watch?v=rB66EC0VXTA&list=PLbEOwbQR9lqxsTusvu8wfkUECrmcV81MU](https://www.youtube.com/watch?v=rB66EC0VXTA&list=PLbEOwbQR9lqxsTusvu8wfkUECrmcV81MU)
 
-Adaptações realizadas neste repositório:
+Adaptações e extensões realizadas neste repositório:
 
-- Migração de MySQL para **SQLite** embarcado;
-- Script de criação e povoamento automático de banco via classe `CriarBanco`;
-- Ajustes de conexão (`ModuloConexao`) e compatibilidade com a nova estrutura de banco;
+- Migração de MySQL para **SQLite** embarcado.
+- Script de criação e povoamento automático de banco via classe `CriarBanco`.
+- Ajustes de conexão (`ModuloConexao`) e compatibilidade com a nova estrutura de banco e com ambiente compilado (`dist/`).
 - Inclusão de múltiplos registros de teste (clientes, usuários, ordens de serviço) para facilitar demonstrações e uso acadêmico.
+- Correção de problemas de build Ant/NetBeans (como referência a `nblibraries.properties`) e configuração de dependências externas.
+- Integração manual de bibliotecas JDBC, JasperReports e utilitários, demonstrando capacidade de lidar com projetos legados e resolver conflitos de dependências.
