@@ -1,42 +1,42 @@
 package br.com.infox.dal;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-/**
- *
- * @author bruno
- */
 public class ModuloConexao {
     // Método responsável por estabelecer a conexão com o banco
     public static Connection conector() {
         Connection conexao = null;
 
-        // Driver do SQLite
         String driver = "org.sqlite.JDBC";
 
-        // IMPORTANTE:
-        // Caminho RELATIVO ao diretório de execução.
-        // Sem a barra inicial, vai criar/usar "database/dbinfox.db"
-        // dentro da pasta do projeto / dist.
-        String url = "jdbc:sqlite:database/dbinfox.db";
-
         try {
-            // Carrega o driver
             Class.forName(driver);
 
-            // Estabelece a conexão
-            conexao = DriverManager.getConnection(url);
+            // Descobre o diretório de execução da aplicação (onde está o JAR)
+            String basePath = new File(".").getCanonicalPath();
 
-            // Log para debug
-            if (conexao != null) {
-                System.out.println("Conexão estabelecida com sucesso! URL = " + url);
+            // Banco na pasta "database" relativa ao diretório de execução
+            String dbPath = basePath + File.separator + "database" + File.separator + "dbinfox.db";
+
+            // Garante que a pasta database existe
+            File dbDir = new File(basePath + File.separator + "database");
+            if (!dbDir.exists()) {
+                dbDir.mkdirs();
             }
 
+            String url = "jdbc:sqlite:" + dbPath;
+
+            conexao = DriverManager.getConnection(url);
+            System.out.println("Conexão estabelecida com sucesso! DB = " + dbPath);
             return conexao;
         } catch (ClassNotFoundException | SQLException e) {
             System.out.println("Erro ao conectar: " + e);
+            return null;
+        } catch (Exception e) {
+            System.out.println("Erro inesperado ao resolver caminho do banco: " + e);
             return null;
         }
     }
