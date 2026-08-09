@@ -12,7 +12,7 @@ Neste repositório eu:
 
 Aplicação desktop em Java para **gerenciamento de clientes** e **emissão de Ordens de Serviço (OS)**, baseada na playlist de desenvolvimento do sistema InfoX disponível em:
 
-> Playlist original do projeto (curso em vídeo):  
+> Playlist original do projeto (Professor José de Assis):  
 > [https://www.youtube.com/watch?v=rB66EC0VXTA&list=PLbEOwbQR9lqxsTusvu8wfkUECrmcV81MU](https://www.youtube.com/watch?v=rB66EC0VXTA&list=PLbEOwbQR9lqxsTusvu8wfkUECrmcV81MU)
 
 ---
